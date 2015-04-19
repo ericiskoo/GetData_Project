@@ -15,11 +15,11 @@ Full description available at: http://archive.ics.uci.edu/ml/datasets/Human+Acti
 
 Processed Data
 --------------
-Subjects, activity labels, and feature vectors from the original train and test sets were merged into a single dataset. Only 68 of the original 561 features were used, which were the ones that extracted only measurements on the mean and standard deviation for each measurement. Finally, the average value for each feature was calculated for each subject/activity resulting in 35 total observations.
+Subjects, activity labels, and feature vectors from the original train and test sets were merged into a single dataset. Only 66 of the original 561 features were used, which were the ones that extracted only measurements on the mean and standard deviation for each measurement. Finally, the average value for each feature was calculated for each subject/activity resulting in 180 total observations.
 
 Code Book
 ---------
-35 obs. of 68 variables
+180 obs. of 68 variables
 * **subject** - The subject who performed the activity for each window sample (1-30).
 * **activity** - The type of activity being performed (6 activities: WALKING, WALKING_UPSTAIRS, WALKING DOWNSTAIRS, SITTING, STANDING, LAYING).
 * **tBodyAcc-mean()-X**, **tBodyAcc-mean()-Y**, ... **fBodyBodyGyroJerkMag-std()** - The average value for each subject/activity for each of the 66 feature variables.

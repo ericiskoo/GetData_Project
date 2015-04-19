@@ -1,3 +1,5 @@
+library(dplyr)
+
 # Download .zip file and extract contents
 destfile <- "./getdata-projectfiles-UCI HAR Dataset.zip"
 if (!file.exists(destfile)) {
@@ -13,9 +15,9 @@ test_X <- read.table(unzip(destfile, files="UCI HAR Dataset/test/X_test.txt", ex
 test_y <- read.table(unzip(destfile, files="UCI HAR Dataset/test/y_test.txt", exdir=".", overwrite=TRUE), sep=" ")
 
 # Combine train and test sets
-subject <- rbind(train_subject, test_subject)
-y <- rbind(train_y, test_y)
-X <- rbind(train_X, test_X)
+subject <- bind_rows(train_subject, test_subject)
+y <- bind_rows(train_y, test_y)
+X <- bind_rows(train_X, test_X)
 
 # Add descriptive variable names
 names(subject) <- "subject"
@@ -23,20 +25,22 @@ names(y) <- "activityId"
 names(X) <- features$V2
 
 # Extract only measurements on the mean and standard deviation for each measurement
-X <- X[,sort(c(grep("-mean()", features$V2, fixed=TRUE), grep("-std()", features$V2, fixed=TRUE)))]
+X <- X[!duplicated(features$V2)]
+X <- bind_cols(select(X, contains("-mean()")), select(X, contains("-std()")))
 
 # Add descriptive activity names
 names(activity_labels) <- c("activityId","activity")
-y <- merge(x=y, y=activity_labels, by="activityId", all.x=TRUE)
+y2 <- left_join(y, activity_labels, by="activityId")
 
 # Combine all datasets into single dataframe
-all <- cbind(subject, y, X)
-all$activityId <- NULL
+all <- bind_cols(subject, y2, X) %>%
+  select(-activityId)
 
 # Create tidy dataset with the average of each variable for each activity and each subject
-library(data.table)
-dt <- data.table(all)
-tidy <- dt[,lapply(.SD,mean),by=list(subject,activity)]
+tidy <- group_by(all, subject, activity) %>% 
+  arrange(subject, activity) %>%
+  summarise_each(funs(mean))
 
 # Export tidy dataset
-write.table(all, file="tidy.txt", row.names=FALSE)
+write.csv(tidy, file="tidy.txt", row.names=FALSE)
+write.csv(tidy, file="tidy.csv", row.names=FALSE)
